@@ -59,4 +59,4 @@ profile = "black"
 line_length = 88
 
 [project.scripts]
-command-cli = "VisualizePhonon:cmdline.main"
+vaspvis = "VisualizePhonon:cmdline.main"
