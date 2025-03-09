@@ -4,8 +4,8 @@ import os
 from io import StringIO
 import tempfile
 import ase
-from vasp_vibration_analyzer.vibrational_analysis import VibrationalMode, VibrationAnalysis
-from vasp_vibration_analyzer.vibrational_analysis_io import read_file
+from VisualizePhonon.vibrational_analysis import VibrationalMode, VibrationAnalysis
+from VisualizePhonon.vibrational_analysis_io import read_file
 
 
 class TestVibrationalMode:

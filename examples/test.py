@@ -1,4 +1,4 @@
-from vasp_vibration_analyzer.vibrational_analysis_io import read_file,save_xsf,save_xyz,generate_asymptote_phonon_code
+from VisualizePhonon.vibrational_analysis_io import read_file,save_xsf,save_xyz,generate_asymptote_phonon_code
 
 analysis = read_file('OUTCAR')
 

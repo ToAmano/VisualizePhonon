@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "VisualizePhonon"
-version = "0.1.0"
+version = "0.0.1"
 description = "A tool for analyzing vibrational modes from VASP OUTCAR files"
 readme = "README.md"
 authors = [
