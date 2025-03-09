@@ -12,5 +12,5 @@ Main features:
 
 __version__ = "0.1.0"
 
-from vasp_vibration_analyzer.vibrational_analysis import VibrationalMode, VibrationAnalysis
+from VisualizePhonon.vibrational_analysis import VibrationalMode, VibrationAnalysis
 __all__ = ["VibrationalMode", "VibrationAnalysis"]

@@ -37,12 +37,6 @@ $cleanup_mode = 2;
 # $aux_dir           = "$ENV{HOME}/.tmp/tex/" . basename(getcwd);
 # $out_dir           = $aux_dir;
 
-
-# latexmk
-# https://github.com/vectorgraphics/asymptote/blob/master/doc/latexmkrc
-# sub asy {return system("asy -o asy/ '$_[0]'");}
-# 上ではうまく動かなくて以下のようにするとうまくいった．
-
 # https://tex.stackexchange.com/questions/258103/latexmk-and-the-location-of-asymptotes-generated-files
 sub asy {return system("asy -o \"$_[0]\" \"$_[0]\"");}
 add_cus_dep("asy","eps",0,"asy");

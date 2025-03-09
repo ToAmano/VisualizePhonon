@@ -1,7 +1,7 @@
 import ase.io
 import ase
 import numpy as np
-from vasp_vibration_analyzer import VibrationalMode,VibrationAnalysis
+from VisualizePhonon import VibrationalMode,VibrationAnalysis
 
 class CreateVibrationAnalysis:
     @classmethod    
