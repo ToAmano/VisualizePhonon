@@ -5,41 +5,42 @@ from io import StringIO
 import tempfile
 import ase
 from VisualizePhonon.vibrational_analysis import VibrationalMode, VibrationAnalysis
-from VisualizePhonon.vibrational_analysis_io import read_file
+from VisualizePhonon.vibrational_analysis_io import read_file, save_xsf
 
 
 class TestVibrationalMode:
     """VibrationalModeクラスのテスト"""
-    
+
     def test_init_real_frequency(self):
         """実数周波数の初期化テスト"""
-        atoms = ase.Atoms(["H","H","O"])
+        atoms = ase.Atoms(["H", "H", "O"])
         freq = 2.5
         eigenvector = np.ones((3, 3))
-        mode = VibrationalMode(atoms,freq, eigenvector)
-        
+        mode = VibrationalMode(atoms, freq, eigenvector)
+
         assert mode.frequency == freq
         assert np.array_equal(mode.eigenvector, eigenvector)
         assert mode.frequency == 2.5
-        
+
     def test_init_imaginary_frequency(self):
         """負周波数の初期化テスト"""
-        atoms = ase.Atoms(["H","H","O"])
+        atoms = ase.Atoms(["H", "H", "O"])
         freq = -3.6
         eigenvector = np.ones((3, 3))
-        mode = VibrationalMode(atoms,freq, eigenvector)
-        
+        mode = VibrationalMode(atoms, freq, eigenvector)
+
         assert mode.frequency == freq
         assert np.array_equal(mode.eigenvector, eigenvector)
         assert mode.frequency == -3.6
-    
+
     def test_repr(self):
         """__repr__メソッドのテスト"""
         # 実数周波数
         atoms = ase.Atoms(["H"])
         mode_real = VibrationalMode(atoms, 2.5, np.ones((1, 3)))
-        assert "VibrationalMode(frequency=2.500000 THz, real)" in repr(mode_real)
-        
+        assert "VibrationalMode(frequency=2.500000 THz, real)" in repr(
+            mode_real)
+
         # 虚数周波数
         atoms = ase.Atoms(["H"])
         mode_imag = VibrationalMode(atoms, -3.6, np.ones((1, 3)))
@@ -48,14 +49,14 @@ class TestVibrationalMode:
 
 class TestVibrationAnalysis:
     """VibrationAnalysisクラスのテスト"""
-    
+
     @pytest.fixture
     def mock_outcar(self):
         """モックOUTCARファイルを作成する"""
         f = open('OUTCAR', 'r')
         data = f.read()
         f.close()
-        
+
         outcar_content = """
 vasp.5.4.4.18Apr17-6-g9f103f2a35 (build May 29 2022 01:12:50) complex          
   
@@ -939,104 +940,105 @@ Space group operators:
                           Minor page faults:       206805
                           Major page faults:            0
                  Voluntary context switches:        15485
-"""       
+"""
         with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
             f.write(outcar_content)
             outcar_path = f.name
-        
+
         yield outcar_path
-        
+
         # テスト後に一時ファイルを削除
         os.unlink(outcar_path)
 
-
     def test_load_from_outcar(self):
         """OUTCARからの読み込みテスト"""
-        analysis = read_file(os.path.split(__file__)[0]+"/OUTCAR") # H2O
+        analysis = read_file(os.path.split(__file__)[0]+"/OUTCAR")  # H2O
         modes = analysis.modes
-        
-        assert len(modes) == 9 
-        
+
+        assert len(modes) == 9
+
         # 実数周波数のテスト
         assert modes[0].frequency == 3836.98435
         assert modes[1].frequency == 3723.925763
         assert modes[2].frequency == 1581.084921
-    
+
     def test_exclude_imag(self):
         """虚数周波数除外オプションのテスト"""
-        analysis = read_file(os.path.split(__file__)[0]+"/OUTCAR", exclude_imag=True)
+        analysis = read_file(os.path.split(__file__)[
+                             0]+"/OUTCAR", exclude_imag=True)
         modes = analysis.modes
-        
+
         assert len(modes) == 5
-        assert all(mode.frequency >=0 for mode in modes)
-    
+        assert all(mode.frequency >= 0 for mode in modes)
+
     def test_get_mode(self):
         """test get_mode"""
         analysis = read_file(os.path.split(__file__)[0]+"/OUTCAR")
         mode = analysis.get_mode(0)
         assert mode.frequency == 3836.98435
-        
+
         # 範囲外のインデックスでの例外テスト
         with pytest.raises(IndexError):
             analysis.get_mode(10)
-    
+
     def test_get_frequencies(self):
         """get_frequenciesメソッドのテスト"""
         analysis = read_file(os.path.split(__file__)[0]+"/OUTCAR")
-        
+
         freqs = analysis.get_frequencies()
         assert len(freqs) == 9
         assert freqs[0] == 3836.98435
         assert freqs[-1] == -155.059014
-        
 
     def test_get_real_modes(self):
         """実数モードの取得テスト"""
         analysis = read_file(os.path.split(__file__)[0]+"/OUTCAR")
         modes = analysis.modes
-        
+
         real_modes = [mode for mode in modes if mode.frequency >= 0]
         assert len(real_modes) == 5
         assert real_modes[0].frequency == 3836.98435
         assert real_modes[1].frequency == 3723.925763
-    
+
     def test_get_imaginary_modes(self):
         """虚数モードの取得テスト"""
         analysis = read_file(os.path.split(__file__)[0]+"/OUTCAR")
         modes = analysis.modes
-        
+
         imag_modes = [mode for mode in modes if mode.frequency < 0]
         assert len(imag_modes) == 4
         assert imag_modes[0].frequency == -1.312929
-    
+
     def test_get_eigenvectors(self):
         """固有ベクトルの取得テスト"""
         analysis = read_file(os.path.split(__file__)[0]+"/OUTCAR")
-        
+
         eigenvectors = analysis.get_eigenvectors()
         assert eigenvectors.shape == (9, 3, 3)  # 3モード, 3イオン, 3次元
-        
+
         # 最初のモードの最初のイオンの変位ベクトルをチェック
         assert np.array_equal(eigenvectors[0, 0], [-0., -0.268872,  0.])
 
 # 修正が必要なバグを見つけるテスト
+
+
 def test_class_fix_methods():
     """クラス実装のバグを見つけるためのテスト"""
     # get_real_modesとget_imaginary_modesメソッドのバグを検出
     atoms = ase.Atoms(["H"])
     analysis = VibrationAnalysis()
     analysis.modes = [
-        VibrationalMode(atoms,1.0, np.ones((1, 3))),
-        VibrationalMode(atoms,-2.0, np.ones((1, 3)))
+        VibrationalMode(atoms, 1.0, np.ones((1, 3))),
+        VibrationalMode(atoms, -2.0, np.ones((1, 3)))
     ]
-    
+
     # バグ：selfの参照が正しくない
     # 以下のテストは現在のコードでは失敗するが、修正後は成功する
     try:
         real_modes = analysis.get_real_modes()
         assert len(real_modes) == 1
         assert real_modes[0].frequency == 1.0
-        
+
         imag_modes = analysis.get_imaginary_modes()
         assert len(imag_modes) == 1
         assert imag_modes[0].frequency == -2.0
@@ -1045,8 +1047,96 @@ def test_class_fix_methods():
         print("バグ検出: get_real_modes()とget_imaginary_modes()メソッドでselfを参照していません")
         print("修正案: 'modes'を'self.modes'に変更してください")
 
+
+def test_save_xsf():
+    """save_xsf関数のテスト"""
+    # テスト用のASE原子オブジェクトを作成
+    from ase import Atoms
+
+    atoms = Atoms('H2O',
+                  positions=[[0.0, 0.0, 0.0],
+                             [0.0, 0.77, 0.59],
+                             [0.0, 0.77, -0.59]],
+                  cell=[[3.0, 0.0, 0.0],
+                        [0.0, 3.0, 0.0],
+                        [0.0, 0.0, 3.0]])
+
+    eigenvector = np.array([[0.1, 0.0, 0.0],
+                            [0.1, 0.0, 0.0],
+                            [0.1, 0.0, 0.0]])
+
+    frequency = np.array([5, 6, 7])
+
+    vibmode = VibrationalMode(atoms, frequency, eigenvector)
+    vibanalysis = VibrationAnalysis()
+    vibanalysis.set_params([vibmode])
+
+    # create temporary files
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.xsf') as temp_file:
+        temp_filename = temp_file.name
+
+    try:
+        result = vibanalysis.save_xsf(temp_filename, 0, scale=2.0)
+        assert os.path.exists(temp_filename)  # check if file exists
+        # read & check the content
+        with open(temp_filename, 'r') as f:
+            file_content = f.read()
+        assert result == file_content
+        assert "CRYSTAL" in result
+        assert "PRIMVEC" in result
+        assert "PRIMCOORD" in result
+        assert "3 1" in result
+        assert "0.2000000000000000" in result
+
+    finally:
+        # remove test files
+        if os.path.exists(temp_filename):
+            os.remove(temp_filename)
+
+
+def test_save_xsf2():
+    """save_xsf関数のテスト"""
+    # テスト用のASE原子オブジェクトを作成
+    from ase import Atoms
+
+    atoms = Atoms('H2O',
+                  positions=[[0.0, 0.0, 0.0],
+                             [0.0, 0.77, 0.59],
+                             [0.0, 0.77, -0.59]],
+                  cell=[[3.0, 0.0, 0.0],
+                        [0.0, 3.0, 0.0],
+                        [0.0, 0.0, 3.0]])
+
+    eigenvector = np.array([[0.1, 0.0, 0.0],
+                            [0.1, 0.0, 0.0],
+                            [0.1, 0.0, 0.0]])
+
+    frequency = np.array([5, 6, 7])
+
+    vibmode = VibrationalMode(atoms, frequency, eigenvector)
+
+    # create temporary files
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.xsf') as temp_file:
+        temp_filename = temp_file.name
+
+    try:
+        result = save_xsf(temp_filename, vibmode, scale=2.0)
+        assert os.path.exists(temp_filename)  # check if file exists
+        # read & check the content
+        with open(temp_filename, 'r') as f:
+            file_content = f.read()
+        assert result == file_content
+        assert "CRYSTAL" in result
+        assert "PRIMVEC" in result
+        assert "PRIMCOORD" in result
+        assert "3 1" in result
+        assert "0.2000000000000000" in result
+
+    finally:
+        # remove test files
+        if os.path.exists(temp_filename):
+            os.remove(temp_filename)
+
+
 if __name__ == "__main__":
-    # pytest実行
-    pytest.main(["-v"]) 
-    
-    
+    pytest.main(["-v"])
