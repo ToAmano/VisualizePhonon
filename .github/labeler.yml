@@ -1,0 +1,20 @@
+Python:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/VisualizePhonon/**/*
+          - pyproject.toml
+          - setup.py
+Docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "*.md"
+          - docs/**/*
+Examples:
+  - changed-files:
+      - any-glob-to-any-file: examples/**/*
+Test:
+  - changed-files:
+      - any-glob-to-any-file: test/**/*
+CICD:
+  - changed-files:
+      - any-glob-to-any-file: .github/**/*
