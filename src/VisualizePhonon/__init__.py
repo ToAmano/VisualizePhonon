@@ -10,7 +10,7 @@ Main features:
 - Export vibration modes to VESTA format
 """
 
-__version__ = "0.1.0"
+__version__ = "0.0.2"
 
 from VisualizePhonon.vibrational_analysis import VibrationalMode, VibrationAnalysis
 __all__ = ["VibrationalMode", "VibrationAnalysis"]

@@ -83,8 +83,8 @@ vaspvis generate -i test/OUTCAR -f xsf -m 0 -s 1
 
 - codeは`ase`に依存します。parser/exporterやCIを触る場合は、`pyproject.toml`の
   dependencyとworkflowのinstall手順を同期させてください。
-- `pyproject.toml`のversionは`0.0.2`、`src/VisualizePhonon/__init__.py`の
-  `__version__`は`0.1.0`で不一致です。
+- autorelease workflowは`cellify`と同じく`src/VisualizePhonon/__init__.py`の
+  `__version__`を読み、対応する`v<version>` tagがない場合にreleaseします。
 - `cmdline.py`の`--scale`は`float`です。README例のように`1.0`を受け取れます。
 - `vibrational_analysis.py`と`vibrational_analysis_io.py`の両方にXSF writer logic
   があります。出力形式を変える場合は挙動をそろえてください。
