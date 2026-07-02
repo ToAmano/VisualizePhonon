@@ -20,7 +20,7 @@ def main():
                             'xsf', 'xyz', 'asy'], help='Output data format. default to xsf')
     gen_parser.add_argument('--mode', '-m', type=int, default=-1,
                             help='The vibration mode. -1 for all modes. default to -1.')
-    gen_parser.add_argument('--scale', '-s', type=int, default=1,
+    gen_parser.add_argument('--scale', '-s', type=float, default=1.0,
                             help='Scale factor of the eigenvector. default to 1.')
 
     # sample :: generate a sample
