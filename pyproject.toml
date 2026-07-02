@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "VisualizePhonon"
-version = "0.0.2"
+dynamic = ["version"]
 description = "A tool for analyzing vibrational modes from VASP OUTCAR files"
 readme = "README.md"
 authors = [
@@ -38,14 +38,6 @@ vesta = [
     "pymatgen>=2022.0.0",
 ]
 
-[tool.setuptools]
-package-dir = {"" = "src"}
-# packages = [""]
-license-files = []
-
-# [tool.setuptools.packages.find]
-# where = ["src"]
-
 [tool.pytest.ini_options]
 testpaths = ["test"]
 python_files = "test_*.py"
@@ -60,3 +52,9 @@ line_length = 88
 
 [project.scripts]
 vaspvis = "VisualizePhonon.cmdline:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/VisualizePhonon"]
+
+[tool.hatch.version]
+path = "src/VisualizePhonon/__init__.py"

@@ -36,8 +36,10 @@ CLIで指定できる出力形式は`xsf`、`xyz`、`asy`です。
     LaTeX出力を作る例。
   - `mode_*`ファイルの多くは可視化の生成物です。明示的にexample出力の更新を
     求められていない限り、sourceではなく生成物として扱ってください。
-- `pyproject.toml`: package metadata、console script、pytest設定、Black/isort設定。
-- `setup.py`: 最小限のsetuptools shim。
+- `pyproject.toml`: package metadata、hatchling build設定、console script、
+  pytest設定、Black/isort設定。
+- `setup.py`: legacyの最小shim。通常のbuild/installは`pyproject.toml`の
+  hatchling設定を使います。
 - `README.md`: install方法、CLI usage、citation、関連ツール。
 
 ## 主要データフロー
@@ -83,8 +85,9 @@ vaspvis generate -i test/OUTCAR -f xsf -m 0 -s 1
 
 - codeは`ase`に依存します。parser/exporterやCIを触る場合は、`pyproject.toml`の
   dependencyとworkflowのinstall手順を同期させてください。
-- autorelease workflowは`cellify`と同じく`src/VisualizePhonon/__init__.py`の
-  `__version__`を読み、対応する`v<version>` tagがない場合にreleaseします。
+- versionは`cellify`と同じく`src/VisualizePhonon/__init__.py`の`__version__`を
+  source of truthにしています。`pyproject.toml`はhatchling dynamic versionで
+  同じ値を読み、autorelease workflowも対応する`v<version>` tagを確認します。
 - `cmdline.py`の`--scale`は`float`です。README例のように`1.0`を受け取れます。
 - `vibrational_analysis.py`と`vibrational_analysis_io.py`の両方にXSF writer logic
   があります。出力形式を変える場合は挙動をそろえてください。
